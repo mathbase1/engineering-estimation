@@ -1,1 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Civil Engineering – Estimation Worksheet (Correct Rounding)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --accent:#1976d2; --light:#e3f2fd; --error:#e53935; --success:#2e7d32; --ink:#111;
+      --muted:#555; --surface:#fff; --field-w:10.5rem;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--light);color:var(--ink)}
+    h1{margin:0.4rem 0 0.25rem;text-align:center;color:var(--accent);font-size:1.35rem}
+    p.lede{max-width:980px;margin:0.2rem auto 0.55rem;text-align:center}
+    .logo{position:absolute;top:10px;left:10px;width:110px;height:auto;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+    /* Top bar */
+    .topbar{max-width:980px;margin:0.15rem auto 0.5rem;display:flex;gap:0.5rem;justify-content:space-between;align-items:center;padding:0 0.5rem}
+    .badge{background:#fff;border:1px solid #d7e6fb;border-radius:6px;padding:0.35rem 0.55rem;font-weight:700;min-width:110px;text-align:center}
+    .badge small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+    .top-actions{display:flex;gap:0.4rem;align-items:center}
+    .fsBtn{border:1px solid #9bbbf0;background:#fff;border-radius:8px;padding:.45rem .7rem;font-weight:800;cursor:pointer}
+    .fsBtn:hover{background:#eff6ff}
+    /* Card */
+    .card{max-width:980px;margin:0.25rem auto;background:var(--surface);border-radius:10px;border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,.08);padding:0.85rem}
+    .titleRow{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+    .qTitle{font-size:1.15rem;font-weight:800;color:var(--accent);margin:0.1rem 0}
+    .qMeta{color:var(--muted);font-size:.95rem}
+    .statement{font-size:1rem;margin:0.45rem 0 0.65rem}
+    /* Hint accordion */
+    details{border:1px solid #c8dbf8;border-radius:8px;margin:0.45rem 0;background:#f9fbff}
+    summary{cursor:pointer;font-weight:800;color:var(--accent);padding:0.55rem 0.7rem;list-style:none}
+    summary::-webkit-details-marker{display:none}
+    .hint{padding:0 0.85rem 0.75rem;font-size:.95rem}
+    .hint ul{margin:0.25rem 0 0.2rem 1.2rem}
+    .hint code{background:#f1f1f1;padding:2px 4px;border-radius:3px}
+    /* Inputs */
+    .io{display:grid;gap:0.7rem;margin-top:0.4rem}
+    .row{display:grid;grid-template-columns: 1.1fr auto auto auto 1fr;align-items:center;gap:.45rem}
+    .row label{font-weight:800}
+    .unit{background:#f1f6ff;border:1px solid #c8dbf8;color:#214b88;border-radius:6px;padding:0.3rem 0.5rem;font-weight:800;min-width:6.2rem;text-align:center}
+    .num{width:var(--field-w);text-align:center;border:1px solid #999;border-radius:6px;font-size:1rem;padding:.4rem .35rem;background:#fafafa}
+    .num:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px #e3f2fd}
+    /* Markers & feedback */
+    .marker{font-size:1.35rem;font-weight:900;min-width:1.8rem;text-align:center}
+    .ok{color:var(--success)} .no{color:var(--error)}
+    .feedback{font-size:0.95rem;color:#222}
+    .feedback .ans{font-weight:900}
+    /* Controls */
+    .controls{display:flex;justify-content:center;gap:.55rem;margin-top:0.6rem;flex-wrap:wrap}
+    button.primary{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.65rem 1.1rem;font-weight:900;cursor:pointer}
+    button.secondary{background:#555;color:#fff;border:none;border-radius:8px;padding:.65rem 1.1rem;font-weight:900;cursor:pointer}
+    button.ghost{background:#fff;border:1px solid #bbb;border-radius:8px;padding:.55rem 0.95rem;font-weight:900;cursor:pointer;color:#333}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    #progress{font-weight:900;text-align:center;color:#000;margin:0.1rem 0 0.5rem}
+    /* Start modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:999}
+    .panel{background:#fff;border-radius:12px;max-width:720px;width:100%;box-shadow:0 8px 28px rgba(0,0,0,.25);border:2px solid var(--accent)}
+    .panel header{padding:0.8rem 1rem;border-bottom:1px solid #e6eefc}
+    .panel header h2{margin:0;color:var(--accent)}
+    .panel .content{padding:0.9rem;display:grid;gap:0.8rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem}
+    .field{display:grid;gap:0.3rem}
+    .field input[type=text], .field input[type=number], .field select{padding:0.5rem .55rem;border:1px solid #9bbbf0;border-radius:8px}
+    .choiceRow{display:flex;gap:.65rem;align-items:center;flex-wrap:wrap}
+    .pill{border:1px solid #9bbbf0;padding:.3rem .6rem;border-radius:999px;cursor:pointer;font-weight:800}
+    .pill input{margin-right:.35rem}
+    .panel footer{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-top:1px solid #e6eefc}
+    .muted{color:var(--muted);font-size:.95rem}
+    /* End screen */
+    #endCard{max-width:800px;margin:0.8rem auto;padding:0.9rem;border-radius:10px;background:#fff;border:2px solid #43a047;display:none}
+    #endCard h3{margin-top:0;color:#1e7a31}
+    .wellDone{display:inline-block;background:#eaf7ec;border:1px solid #b9e2bf;color:#1e7a31;padding:.25rem .5rem;border-radius:6px;font-weight:900}
+    /* Small screens / short viewports */
+    @media (max-width:680px){
+      .row{grid-template-columns:1fr auto auto auto 1fr}
+      .grid2{grid-template-columns:1fr}
+      .num{width:8.8rem}
+      .logo{width:88px}
+    }
+    @media (max-height:740px){
+      body{font-size:0.95rem}
+      .qTitle{font-size:1.05rem}
+      .num{padding:.35rem .3rem}
+      .card{padding:0.7rem}
+      .topbar{gap:0.4rem}
+      .badge{padding:0.3rem 0.5rem}
+    }
+  </style>
+</head>
+<body>
+  <img src="https://lirp.cdn-website.com/b085c470/dms3rep/multi/opt/Bucks%2BCollege%2BGroup-e5af1b68-1920w.jpg"
+       alt="Bucks College Group logo" class="logo">
 
+  <h1>Estimation – Civil Engineering</h1>
+  <p class="lede">Round the <em>given measurements</em> to the stated precision, then calculate with those rounded values. <strong>Answer to 2 decimal places.</strong></p>
+
+  <div class="topbar">
+    <div style="display:flex;gap:0.5rem;align-items:center">
+      <div class="badge" id="who"><span id="whoName">Student</span><small>Participant</small></div>
+      <div class="badge" id="mode"><span id="modeTxt">Timed</span><small>Mode</small></div>
+      <div class="badge" id="timer"><span id="timeTxt">—</span><small>Timer</small></div>
+      <div class="badge" id="scoreTop"><span id="scoreTopVal">0 / 0</span><small>Score</small></div>
+    </div>
+    <div class="top-actions">
+      <button class="fsBtn" id="fsBtn" title="Toggle full screen">⛶ Full screen</button>
+    </div>
+  </div>
+
+  <!-- Global how-to hint -->
+  <div class="card" id="globalHint">
+    <details>
+      <summary>How to estimate (click to expand)</summary>
+      <div class="hint">
+        <ul>
+          <li>First, <strong>round the given measurements</strong> to the stated precision:
+            <ul>
+              <li><strong>1 s.f.</strong> (one significant figure)</li>
+              <li><strong>Nearest whole number</strong></li>
+              <li><strong>1 d.p.</strong> (1 decimal place)</li>
+            </ul>
+          </li>
+          <li>Then <strong>use the rounded values</strong> in the calculation (add / multiply / divide / indices such as squares or square‑roots).</li>
+          <li>Convert units if needed (e.g., <code>1 kN = 1000 N</code>, <code>1 m = 1000 mm</code>, <code>1 m³ = 1000 L</code>).</li>
+          <li><strong>Round your final answer to 2 dp.</strong></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- Question card -->
+  <div class="card" id="qCard" style="display:none">
+    <div class="titleRow">
+      <div>
+        <div class="qTitle" id="qTitle">Question</div>
+        <div class="qMeta" id="qMeta">Round inputs as instructed, then answer to <strong>2 dp</strong>. Click <strong>Check</strong> when ready.</div>
+      </div>
+      <div class="qMeta" id="progress">Question 1</div>
+    </div>
+
+    <div class="statement" id="statement"></div>
+
+    <details id="hintBox">
+      <summary>Hint / Formula (click to expand)</summary>
+      <div class="hint" id="hintHtml"></div>
+    </details>
+
+    <div class="io">
+      <div class="row">
+        <label>Estimated value</label>
+        <input class="num" id="ansVal" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 123.45">
+        <span class="unit" id="unitOut"></span>
+        <span class="marker" id="markAns"></span>
+        <span class="feedback" id="fbAns"></span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="primary" id="checkBtn">Check</button>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+      <button class="secondary" id="newBtn">New questions</button>
+    </div>
+  </div>
+
+  <!-- End summary -->
+  <div id="endCard">
+    <h3>Summary</h3>
+    <p class="wellDone" id="endMsg"></p>
+    <ul>
+      <li><strong>Name:</strong> <span id="sumName"></span></li>
+      <li><strong>Mode:</strong> <span id="sumMode"></span></li>
+      <li><strong>Score:</strong> <span id="sumScore"></span></li>
+      <li><strong>Time used:</strong> <span id="sumTime"></span></li>
+    </ul>
+    <div style="display:flex;gap:.6rem;justify-content:center;margin-top:.4rem">
+      <button class="secondary" id="restartBtn">Restart</button>
+    </div>
+  </div>
+
+  <!-- Start menu modal -->
+  <div class="modal" id="startModal">
+    <div class="panel">
+      <header><h2>Start Worksheet</h2></header>
+      <div class="content">
+        <div class="field">
+          <label for="nameInput"><strong>Your name</strong></label>
+          <input id="nameInput" type="text" placeholder="Type your name…" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label><strong>Mode</strong></label>
+          <div class="choiceRow">
+            <label class="pill"><input type="radio" name="mode" value="timed" checked>Timed</label>
+            <label class="pill"><input type="radio" name="mode" value="target">Target</label>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field" id="timedField" style="display:block">
+            <label><strong>Time limit</strong></label>
+            <div class="choiceRow">
+              <label class="pill"><input type="radio" name="tlimit" value="600">10 minutes</label>
+              <label class="pill"><input type="radio" name="tlimit" value="1200" checked>20 minutes</label>
+              <label class="pill"><input type="radio" name="tlimit" value="1800">30 minutes</label>
+              <label class="pill"><input type="radio" name="tlimit" value="0">Unlimited</label>
+            </div>
+          </div>
+
+          <div class="field" id="targetField" style="display:none">
+            <label for="targetInput"><strong>Target (correct answers to finish)</strong></label>
+            <input id="targetInput" type="number" min="1" max="1000" step="1" value="8">
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="qtyInput"><strong>Total questions (per set)</strong></label>
+            <select id="qtyInput">
+              <option value="8">8</option>
+              <option value="10" selected>10</option>
+              <option value="12">12</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="muted">Tip</label>
+            <div class="muted">Round inputs to the stated precision first, then calculate and round your final answer to <strong>2 dp</strong>.</div>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <span class="muted">You can generate a fresh random set any time.</span>
+        <div>
+          <button class="primary" id="startBtn">Start worksheet</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+<script>
+/* ========= Helpers (strict 2‑dp evaluation) ========= */
+const rnd=(m,M)=>Math.floor(Math.random()*(M-m+1))+m;
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const round2=x=>Math.round((+x + Number.EPSILON)*100)/100;
+const to2=x=>isFinite(x)?round2(x).toFixed(2):'—';
+const parseNum = (input) => {
+  const raw = (typeof input === 'string' ? input : (input?.value ?? '')).toString().trim().replace(',','.');
+  const x = parseFloat(raw);
+  return isFinite(x)?x:NaN;
+};
+const eq2dp=(a,b)=>isFinite(a)&&isFinite(b)&&round2(a)===round2(b);
+const secsToMMSS=s=>{const m=Math.floor(s/60), ss=String(s%60).padStart(2,'0'); return `${m}:${ss}`;};
+
+/* ========= Rounding helpers ========= */
+function roundSig(x, n){
+  if(!isFinite(x) || x===0) return 0;
+  const d = Math.ceil(Math.log10(Math.abs(x)));
+  const power = n - d;
+  const factor = Math.pow(10, power);
+  return Math.round(x * factor) / factor;
+}
+function roundPrec(x, mode){
+  if(mode==='1sf') return roundSig(x,1);
+  if(mode==='whole') return Math.round(x);
+  if(mode==='1dp') return Math.round(x*10)/10;
+  return x;
+}
+const precLabel = (m)=> m==='1sf' ? '1 significant figure'
+                           : m==='whole' ? 'nearest whole number'
+                           : '1 decimal place';
+
+/* Ensure givens are NOT already rounded to the requested precision */
+function isAtPrecision(x, mode){
+  if(mode==='whole') return Math.abs(x - Math.round(x)) < 1e-12;
+  if(mode==='1dp')   return Math.abs(x - Math.round(x*10)/10) < 1e-12;
+  if(mode==='1sf')   return Math.abs(x - roundSig(x,1)) < 1e-12;
+  return false;
+}
+function rawNotAtPrecision(min, max, mode, dp=3){
+  // Generate a value with 'dp' decimals that is NOT already rounded to 'mode'
+  const steps = Math.max(1, Math.floor((max - min) * Math.pow(10, dp)));
+  for(let i=0;i<40;i++){
+    const k = rnd(0, steps);
+    const v = +(min + k/Math.pow(10, dp)).toFixed(dp);
+    if(!isAtPrecision(v, mode)) return v;
+  }
+  // Fallback: nudge by smallest place beyond target precision
+  let v = +(min + Math.random()*(max-min)).toFixed(dp);
+  const nudge = (mode==='whole') ? 1e-3 : (mode==='1dp' ? 1e-3 : Math.pow(10, -Math.ceil(Math.log10(Math.abs(v)))-2));
+  return +(v + nudge).toFixed(dp);
+}
+
+/* ========= Unit helpers ========= */
+const unit = (u) => ({
+  mm:'mm', cm:'cm', m:'m', in:'in',
+  mm2:'mm²', cm2:'cm²', m2:'m²',
+  mm3:'mm³', cm3:'cm³', m3:'m³',
+  N:'N', kN:'kN', MPa:'MPa', L:'L', t:'t', kg:'kg', 'km/h':'km/h'
+}[u]||u);
+
+// length conversions (basic)
+const LEN_TO_MM = { mm:1, cm:10, m:1000, in:25.4 };
+function lengthFactor(from, to){
+  const mmF = LEN_TO_MM[from], mmT = LEN_TO_MM[to];
+  if(!mmF || !mmT) throw new Error('Unsupported length unit');
+  return mmF / mmT;
+}
+
+/* ========= Random helpers ========= */
+const PREC_MODES = ['1sf','whole','1dp'];
+const pickPrec = ()=> pick(PREC_MODES);
+
+/* ========= Question object shape =========
+  { title, statementHTML, hintHTML, unitOut, check:()=>({val}) }
+  - 'val' is computed using the *rounded* givens, then final is rounded to 2 dp in marking.
+*/
+
+/* ===== Addition ===== */
+function qAdd_RoadLength(){
+  const p = pickPrec();
+  const a = rawNotAtPrecision(120.000, 389.999, p, 3);
+  const b = rawNotAtPrecision( 48.000, 175.999, p, 3);
+  const c = rawNotAtPrecision( 22.000,  96.999, p, 3);
+  const ar = roundPrec(a,p), br = roundPrec(b,p), cr = roundPrec(c,p);
+  const y = ar + br + cr; // metres
+  return {
+    title:'Haul road length (addition)',
+    statementHTML:`A temporary haul road is built in three straight segments: <strong>${a.toFixed(3)} m</strong>, <strong>${b.toFixed(3)} m</strong>, and <strong>${c.toFixed(3)} m</strong>.
+      <br><em>Round each length to <strong>${precLabel(p)}</strong> and then add.</em>`,
+    hintHTML:`No special formula beyond addition.`,
+    unitOut: unit('m'),
+    check:()=>({ val: y })
+  };
+}
+
+function qAdd_LiftMassToTonnes(){
+  const p = pickPrec();
+  const m1 = rawNotAtPrecision(320.000,1180.999,p,3);   // kg
+  const m2 = rawNotAtPrecision(140.000, 780.999,p,3);   // kg
+  const m3 = rawNotAtPrecision( 65.000, 420.999,p,3);   // kg
+  const m1r=roundPrec(m1,p), m2r=roundPrec(m2,p), m3r=roundPrec(m3,p);
+  const totalKg = m1r+m2r+m3r;
+  const y = totalKg/1000; // tonnes
+  return {
+    title:'Crane lift total mass (addition + unit conversion)',
+    statementHTML:`A panel lift includes rigging <strong>${m1.toFixed(3)} kg</strong>, inserts <strong>${m2.toFixed(3)} kg</strong>, and frame <strong>${m3.toFixed(3)} kg</strong>.
+      <br><em>Round each to <strong>${precLabel(p)}</strong>, sum, then convert kg → t.</em>`,
+    hintHTML:`Add the rounded masses, then divide by \(1000\) to convert to tonnes.`,
+    unitOut: unit('t'),
+    check:()=>({ val: y })
+  };
+}
+
+/* ===== Multiplication ===== */
+function qMul_SlabArea(){
+  const p = pickPrec();
+  const L = rawNotAtPrecision(12.000, 48.999, p, 3); // m
+  const W = rawNotAtPrecision( 8.000, 26.999, p, 3); // m
+  const Lr = roundPrec(L,p), Wr = roundPrec(W,p);
+  const y = Lr * Wr; // m²
+  return {
+    title:'Slab area estimate (multiplication)',
+    statementHTML:`A slab measures <strong>${L.toFixed(3)} m</strong> by <strong>${W.toFixed(3)} m</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong> and estimate the area.</em>`,
+    hintHTML:`Formula: \\(A=L\\times W\\). Use the <em>rounded</em> dimensions.`,
+    unitOut: unit('m2'),
+    check:()=>({ val: y })
+  };
+}
+
+function qMul_SlabVolume_withThickness(){
+  const p = pickPrec();
+  const L  = rawNotAtPrecision(9.000, 36.999, p, 3);   // m
+  const W  = rawNotAtPrecision(6.000, 24.999, p, 3);   // m
+  const tmm= rawNotAtPrecision(150.000, 300.999, p, 3);// mm
+  const Lr = roundPrec(L,p), Wr=roundPrec(W,p), trmm=roundPrec(tmm,p);
+  const tr = trmm/1000; // m
+  const y = Lr * Wr * tr; // m³
+  return {
+    title:'Concrete volume (multiplication + unit conversion)',
+    statementHTML:`A slab is <strong>${L.toFixed(3)} m</strong> × <strong>${W.toFixed(3)} m</strong> with thickness <strong>${tmm.toFixed(3)} mm</strong>.
+      <br><em>Round all to <strong>${precLabel(p)}</strong>, convert the rounded thickness mm → m, then multiply.</em>`,
+    hintHTML:`Formula: \\(V=L\\times W\\times t\\). Convert the <em>rounded</em> thickness by \\(/1000\\).`,
+    unitOut: unit('m3'),
+    check:()=>({ val: y })
+  };
+}
+
+/* ===== Division ===== */
+function qDiv_Stress(){
+  const p = pickPrec();
+  const FkN = rawNotAtPrecision(120.000, 480.999, p, 3);    // kN
+  const Amm2= rawNotAtPrecision(2500.000, 12500.999, p, 3); // mm²
+  const Fr = roundPrec(FkN,p), Ar=roundPrec(Amm2,p);
+  const FN = Fr*1000; // N
+  const y = FN / Ar;  // N/mm² = MPa
+  return {
+    title:'Tensile stress (division + unit conversion)',
+    statementHTML:`A tie experiences force <strong>${FkN.toFixed(3)} kN</strong> over cross‑sectional area <strong>${Amm2.toFixed(3)} mm²</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong> and estimate the stress in MPa.</em>`,
+    hintHTML:`Formula: \\(\\sigma = \\tfrac{F}{A}\\). Convert the <em>rounded</em> force to N (\\(1\\,kN=1000\\,N\\)). Stress in \(N/mm^2=\\) MPa.`,
+    unitOut: unit('MPa'),
+    check:()=>({ val: y })
+  };
+}
+
+function qDiv_BearingPressure(){
+  const p = pickPrec();
+  const FkN = rawNotAtPrecision(300.000, 1800.999, p, 3); // kN
+  const Am2 = rawNotAtPrecision(  0.800,    4.599, p, 3); // m²
+  const Fr = roundPrec(FkN,p), Ar=roundPrec(Am2,p);
+  const y = Fr / Ar; // kN/m² = kPa
+  return {
+    title:'Bearing pressure (division)',
+    statementHTML:`A column load of <strong>${FkN.toFixed(3)} kN</strong> sits on footing area <strong>${Am2.toFixed(3)} m²</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong> and estimate the bearing pressure (kPa).</em>`,
+    hintHTML:`Formula: \\(p=\\tfrac{F}{A}\\). Note \(1\\,kN/m^2=1\\,kPa\\).`,
+    unitOut: 'kPa',
+    check:()=>({ val: y })
+  };
+}
+
+/* ===== Indices: squares ===== */
+function qIdx_CircleArea(){
+  const p = pickPrec();
+  const dmm = rawNotAtPrecision(350.000, 1200.999, p, 3); // mm
+  const dr = roundPrec(dmm,p);
+  const y = Math.PI * (dr*dr) / 4; // mm²
+  return {
+    title:'Circular pile cross‑section (square)',
+    statementHTML:`A bored pile has diameter <strong>${dmm.toFixed(3)} mm</strong>.
+      <br><em>Round the diameter to <strong>${precLabel(p)}</strong> and estimate the area in mm².</em>`,
+    hintHTML:`Formula: \\(A = \\dfrac{\\pi d^2}{4}\\). Square the <em>rounded</em> diameter.`,
+    unitOut: unit('mm2'),
+    check:()=>({ val: y })
+  };
+}
+
+function qIdx_SquareFooting(){
+  const p = pickPrec();
+  const s = rawNotAtPrecision(1.800, 5.699, p, 3); // m
+  const sr = roundPrec(s,p);
+  const y = sr*sr; // m²
+  return {
+    title:'Square footing plan area (square)',
+    statementHTML:`A square footing has side length <strong>${s.toFixed(3)} m</strong>.
+      <br><em>Round the side to <strong>${precLabel(p)}</strong> and estimate the plan area.</em>`,
+    hintHTML:`Formula: \\(A = s^2\\). Square the <em>rounded</em> side length.`,
+    unitOut: unit('m2'),
+    check:()=>({ val: y })
+  };
+}
+
+/* ===== Indices: square root ===== */
+function qIdx_BarDiameterFromArea(){
+  const p = pickPrec();
+  const Amm2 = rawNotAtPrecision(200.000, 1600.999, p, 3); // mm²
+  const Ar = roundPrec(Amm2,p);
+  const y = Math.sqrt(4*Ar/Math.PI); // mm
+  return {
+    title:'Bar diameter from area (square root)',
+    statementHTML:`A design requires a steel bar of area <strong>${Amm2.toFixed(3)} mm²</strong>.
+      <br><em>Round the area to <strong>${precLabel(p)}</strong> and estimate the diameter in mm.</em>`,
+    hintHTML:`From \\(A=\\dfrac{\\pi d^2}{4}\\) ⇒ \\(d=\\sqrt{\\dfrac{4A}{\\pi}}\\). Use the <em>rounded</em> area.`,
+    unitOut: unit('mm'),
+    check:()=>({ val: y })
+  };
+}
+
+function qIdx_RampHypotenuse(){
+  const p = pickPrec();
+  const rise = rawNotAtPrecision(280.000, 1800.999, p, 3); // mm
+  const run  = rawNotAtPrecision(1200.000,6000.999, p, 3); // mm
+  const rr = roundPrec(rise,p), rn = roundPrec(run,p);
+  const hyp_mm = Math.sqrt(rr*rr + rn*rn);
+  const y = hyp_mm/1000; // m
+  return {
+    title:'Ramp length (square root + unit conversion)',
+    statementHTML:`A temporary access ramp has rise <strong>${rise.toFixed(3)} mm</strong> and run <strong>${run.toFixed(3)} mm</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong>, then estimate ramp length in m.</em>`,
+    hintHTML:`Pythagoras: \\(L=\\sqrt{rise^2+run^2}\\). Convert the <em>rounded</em> length from mm to m by \\(/1000\\).`,
+    unitOut: unit('m'),
+    check:()=>({ val: y })
+  };
+}
+
+/* ===== Mixed multiply/divide ===== */
+function qMul_VelocityDischarge(){
+  const p = pickPrec();
+  const v = rawNotAtPrecision(0.450, 3.800, p, 3); // m/s
+  const A = rawNotAtPrecision(0.020, 1.200, p, 3); // m²
+  const vr = roundPrec(v,p), Ar=roundPrec(A,p);
+  const y = vr*Ar*1000; // L/s (since 1 m³/s = 1000 L/s)
+  return {
+    title:'Pipe discharge (multiplication + unit conversion)',
+    statementHTML:`A flow has mean velocity <strong>${v.toFixed(3)} m/s</strong> through area <strong>${A.toFixed(3)} m²</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong> and estimate discharge in L/s.</em>`,
+    hintHTML:`Use \\(Q=vA\\). Convert \(m^3/s\\to L/s\\) by multiplying by \(1000\), using the <em>rounded</em> values.`,
+    unitOut: 'L/s',
+    check:()=>({ val: y })
+  };
+}
+
+function qDiv_AvgSpeed(){
+  const p = pickPrec();
+  const d = rawNotAtPrecision( 2.800, 48.999, p, 3); // km
+  const t = rawNotAtPrecision( 6.000, 95.999, p, 3); // min
+  const dr = roundPrec(d,p), tr = roundPrec(t,p);
+  const th = tr/60; // hours
+  const y = dr/th; // km/h
+  return {
+    title:'Site vehicle average speed (division + unit conversion)',
+    statementHTML:`A truck covers <strong>${d.toFixed(3)} km</strong> in <strong>${t.toFixed(3)} min</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong> and estimate the speed in km/h.</em>`,
+    hintHTML:`Use \\(v=\\tfrac{d}{t}\\). Convert the <em>rounded</em> time from minutes to hours by \\(/60\\).`,
+    unitOut: unit('km/h'),
+    check:()=>({ val: y })
+  };
+}
+
+function qCyl_PileVolume(){
+  const p = pickPrec();
+  const dmm = rawNotAtPrecision(450.000, 1200.999, p, 3); // mm
+  const Lm  = rawNotAtPrecision(  4.500,   18.099, p, 3); // m
+  const dr = roundPrec(dmm,p), Lr = roundPrec(Lm,p);
+  const d_m = dr/1000;
+  const y = Math.PI * (d_m*d_m)/4 * Lr; // m³
+  return {
+    title:'Bored pile concrete volume (square + multiplication)',
+    statementHTML:`A pile has diameter <strong>${dmm.toFixed(3)} mm</strong> and length <strong>${Lm.toFixed(3)} m</strong>.
+      <br><em>Round both to <strong>${precLabel(p)}</strong>, convert the <em>rounded</em> diameter to m, then compute the volume.</em>`,
+    hintHTML:`Use \\(V=\\dfrac{\\pi d^2}{4}\\,L\\). Convert the <em>rounded</em> diameter from mm to m by \\(/1000\\).`,
+    unitOut: unit('m3'),
+    check:()=>({ val: y })
+  };
+}
+
+/* Pool of generators (randomised each set) */
+const GENERATORS = [
+  qAdd_RoadLength, qAdd_LiftMassToTonnes,
+  qMul_SlabArea, qMul_SlabVolume_withThickness,
+  qDiv_Stress, qDiv_BearingPressure,
+  qIdx_CircleArea, qIdx_SquareFooting,
+  qIdx_BarDiameterFromArea, qIdx_RampHypotenuse,
+  qMul_VelocityDischarge, qDiv_AvgSpeed, qCyl_PileVolume
+];
+
+/* ========= State ========= */
+let QUESTIONS=[], BATCH=10, idx=0, score=0; // idx = total questions served so far
+let nameStr='Student', mode='timed', timeLeft=0, timerId=null, target=0, correctSoFar=0, unlimited=false;
+let currentQ=null;
+/* ========= Elements ========= */
+const el = id=>document.getElementById(id);
+const $startModal=el('startModal');
+const $qCard=el('qCard');
+const $endCard=el('endCard');
+const $who=el('whoName'), $mode=el('modeTxt'), $timer=el('timeTxt'), $scoreTop=el('scoreTopVal');
+const $qTitle=el('qTitle'), $qMeta=el('qMeta'), $statement=el('statement'), $hintHtml=el('hintHtml');
+const $progress=el('progress');
+const $ansVal=el('ansVal'), $unitOut=el('unitOut'), $markAns=el('markAns'), $fbAns=el('fbAns');
+const $checkBtn=el('checkBtn'), $nextBtn=el('nextBtn'), $newBtn=el('newBtn'), $fsBtn=el('fsBtn');
+/* End elements for summary */
+const $endMsg=el('endMsg'), $sumName=el('sumName'), $sumMode=el('sumMode'), $sumScore=el('sumScore'), $sumTime=el('sumTime');
+
+/* ========= Build a set ========= */
+function buildSet(n){
+  const gens=[...GENERATORS];
+  const qs=[];
+  for(let i=0;i<n;i++){
+    const g = gens.length ? gens.splice(rnd(0,gens.length-1),1)[0] : pick(GENERATORS);
+    qs.push(g());
+  }
+  return qs;
+}
+
+/* ========= Top bar / timer ========= */
+function updateTop(){
+  $who.textContent = nameStr || 'Student';
+  $mode.textContent = mode==='timed' ? 'Timed' : 'Target';
+  $scoreTop.textContent = `${score} / ${idx}`;
+  $timer.textContent = (mode==='timed' && !unlimited) ? secsToMMSS(timeLeft) : '—';
+}
+function startTimer(){
+  if(mode!=='timed' || unlimited) return;
+  clearInterval(timerId);
+  timerId = setInterval(()=>{
+    timeLeft = Math.max(0, timeLeft-1);
+    $timer.textContent = secsToMMSS(timeLeft);
+    if(timeLeft===0){
+      clearInterval(timerId);
+      finish('Time’s up!');
+    }
+  },1000);
+}
+
+/* ========= Start / Finish ========= */
+function startWorksheet(){
+  BATCH = parseInt(el('qtyInput').value,10);
+  QUESTIONS = buildSet(BATCH);
+  idx=0; score=0; correctSoFar=0;
+  $endCard.style.display='none';
+  $qCard.style.display='block';
+  el('globalHint').style.display='block';
+  renderQ();
+  updateTop();
+  if(window.MathJax){ MathJax.typeset(); }
+  if(mode==='timed'){ startTimer(); }
+}
+function finish(message='Well done!'){
+  clearInterval(timerId);
+  $qCard.style.display='none';
+  el('globalHint').style.display='none';
+  $endCard.style.display='block';
+  $endMsg.textContent = message;
+  $sumName.textContent = nameStr || 'Student';
+  $sumMode.textContent = ($mode.textContent);
+  $sumScore.textContent = `${score} / ${idx}`;
+  const tlimitRaw = parseInt(document.querySelector('input[name="tlimit"]:checked')?.value||'0',10);
+  const setTime = (mode==='timed' && !unlimited) ? tlimitRaw : 0;
+  const usedSecs = (mode==='timed' && !unlimited) ? (setTime - timeLeft) : 0;
+  $sumTime.textContent = (mode==='timed' && !unlimited) ? secsToMMSS(usedSecs) : '—';
+}
+
+/* ========= Render ========= */
+function clearFeedback(){
+  $markAns.textContent=''; $markAns.className='marker'; $fbAns.textContent='';
+}
+function progressText(){
+  if(mode==='timed') return `Question ${idx+1}`;
+  return `Question ${idx+1} · Target ${correctSoFar}/${target}`;
+}
+function renderQ(){
+  const local = idx % QUESTIONS.length;
+  currentQ = QUESTIONS[local];
+  $progress.textContent = progressText();
+  $qTitle.textContent = currentQ.title;
+  $statement.innerHTML = currentQ.statementHTML;
+  $hintHtml.innerHTML = currentQ.hintHTML;
+  $unitOut.textContent = currentQ.unitOut;
+  $ansVal.value='';
+  $ansVal.disabled=false;
+  clearFeedback();
+  $nextBtn.disabled = true;
+  if(window.MathJax){ MathJax.typeset(); }
+}
+
+/* ========= Check/Score ========= */
+function checkCurrent(){
+  const { val } = currentQ.check(); // expected (unrounded), derived from *rounded* givens
+  const expected = round2(val);
+  const expectedStr = to2(expected);
+  const stu = parseNum($ansVal);
+
+  if(isFinite(stu)) $ansVal.value = to2(stu);
+
+  let ok=false;
+  if(isFinite(stu) && eq2dp(stu, expected)){
+    $markAns.textContent='✓'; $markAns.className='marker ok'; $fbAns.textContent='';
+    ok=true;
+  }else if(!isNaN(stu)){
+    $markAns.textContent='✗'; $markAns.className='marker no';
+    $fbAns.innerHTML = `Ans: <span class="ans">${expectedStr} ${currentQ.unitOut}</span>`;
+  }
+
+  if(ok){ score++; correctSoFar++; }
+  $scoreTop.textContent = `${score} / ${idx+1}`;
+
+  $ansVal.disabled=true;
+  $nextBtn.disabled=false;
+
+  // End immediately if target reached
+  if(mode==='target' && correctSoFar>=target){
+    finish('Target achieved!');
+  }
+}
+
+function nextQ(){
+  idx++; // total asked increases
+  if(idx % QUESTIONS.length === 0){
+    QUESTIONS = buildSet(BATCH); // refresh for variety
+  }
+  renderQ();
+  updateTop();
+}
+
+/* ========= Events ========= */
+$checkBtn.addEventListener('click', checkCurrent);
+$nextBtn.addEventListener('click', nextQ);
+$newBtn.addEventListener('click', ()=>{ $startModal.style.display='flex'; });
+
+// auto-format numeric inputs to 2 dp on blur
+document.querySelectorAll('input.num').forEach(inp=>{
+  inp.addEventListener('blur', ()=>{
+    const x = parseNum(inp);
+    if(isFinite(x)) inp.value = to2(x);
+  });
+});
+
+// Keyboard: Enter -> Check (or Next if available)
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && !$nextBtn.disabled){ nextQ(); }
+  else if(e.key==='Enter' && $nextBtn.disabled && !$checkBtn.disabled){ checkCurrent(); }
+});
+
+/* ========= Start modal logic ========= */
+function updateModeFields(){
+  const modeVal = document.querySelector('input[name="mode"]:checked').value;
+  el('timedField').style.display = (modeVal==='timed') ? '' : 'none';
+  el('targetField').style.display = (modeVal==='target') ? '' : 'none';
+}
+document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change', updateModeFields));
+
+el('startBtn').addEventListener('click', ()=>{
+  nameStr = el('nameInput').value.trim() || 'Student';
+  mode = document.querySelector('input[name="mode"]:checked').value;
+  unlimited = false;
+  if(mode==='timed'){
+    const tSel = parseInt(document.querySelector('input[name="tlimit"]:checked').value,10);
+    unlimited = (tSel===0);
+    timeLeft = unlimited ? 0 : (tSel || 1200);
+  } else { timeLeft = 0; }
+  if(mode==='target'){
+    target = clamp(parseInt(el('targetInput').value,10)||8,1,1000000);
+  } else { target = 0; }
+  $startModal.style.display='none';
+  $mode.textContent = mode==='timed' ? 'Timed' : 'Target';
+  if(mode==='timed' && unlimited){ $timer.textContent='—'; }
+  startWorksheet();
+});
+
+el('restartBtn').addEventListener('click', ()=>{ $startModal.style.display='flex'; });
+updateModeFields();
+
+/* ========= Fullscreen toggle ========= */
+$fsBtn.addEventListener('click', ()=>{
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen?.();
+  }else{
+    document.exitFullscreen?.();
+  }
+});
+document.addEventListener('fullscreenchange', ()=>{
+  if(document.fullscreenElement){
+    $fsBtn.textContent = '✕ Exit full screen';
+  }else{
+    $fsBtn.textContent = '⛶ Full screen';
+  }
+});
+
+/* ========= Initial ========= */
+$startModal.style.display='flex';
+</script>
+</body>
+</html>
